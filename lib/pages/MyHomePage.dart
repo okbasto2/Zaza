@@ -316,13 +316,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   child: (currentTheme == ThemeMode.dark) ? const Icon(Icons.light_mode, color: Colors.yellow, size: 37,) : const Icon(Icons.dark_mode, color: Colors.black, size: 37,),
                   onTap: () {
                     ref.read(themeProvider.notifier).toggleTheme();
-                    print(contentList.length);
-                    print(lookupMimeType(file!.path));
                   },
                 ),
                 const SizedBox(width: 8,),
                 GestureDetector(
-                  child: (currentTheme == ThemeMode.dark) ? const Icon(Icons.menu, color: Colors.white, size: 42,) : const Icon(Icons.menu, color: Colors.black, size: 42,),
+                  child: (currentTheme == ThemeMode.dark) ? const Icon(Icons.settings, color: Colors.white, size: 42,) : const Icon(Icons.menu, color: Colors.black, size: 42,),
                   onTap: () {
                     _focusNode.unfocus();
                     Navigator.push(context, MaterialPageRoute(builder: (context) => Settings(currentPersonality: personality, onPersonalityChanged: updatePersonality, contentList2: contentList, images2: images, messages2: messages, clearConvo: clearConversation)));
