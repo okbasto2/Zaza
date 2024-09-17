@@ -13,6 +13,9 @@ import 'package:hive/hive.dart';
 import 'package:gemini/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 
+
+
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -26,7 +29,10 @@ void main() async{
 
 
   //open the box
-  var box = await Hive.openBox('box');
+  var messagesBox = await Hive.openBox('messages');
+  var versionBox = await Hive.openBox('version');
+
+  //put the current version in the version box
 
 
   //initialize firebase
@@ -34,7 +40,7 @@ void main() async{
 
 
   //loading the api key
-  await dotenv.load(fileName: "env");
+  await dotenv.load(fileName: 'env');
 
 
   //var apikey = const String.fromEnvironment("API_KEY");

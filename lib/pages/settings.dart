@@ -15,7 +15,7 @@ class Settings extends StatelessWidget {
   final String currentPersonality;
   final Function(String) onPersonalityChanged;
 
-  final box = Hive.box("box");
+  final box = Hive.box('messages');
 
   final Function() clearConvo;
   final List<Content> contentList2;

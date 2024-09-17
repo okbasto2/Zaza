@@ -21,6 +21,8 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:mime/mime.dart';
 import 'dart:math';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 
 
@@ -44,7 +46,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   String personality = "you are a helpful assistant, ignore the style of writing of your previous responses with a different system instruction";
 
   //referencing box
-  var box = Hive.box("box");
+  var messagesBox = Hive.box("messages");
   
 
 
@@ -69,13 +71,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    for(var i in box.keys){
+    for(var i in messagesBox.keys){
       
-      messages.add(Message(isUser: box.get(i).isUser, text: box.get(i).text, image: box.get(i).imagePath != null ? XFile(box.get(i).imagePath) : null));
-      if(box.get(i).imagePath != null){
-        contentList.add(Content.data(lookupMimeType(box.get(i).imagePath)!, File(box.get(i).imagePath).readAsBytesSync()));
+      messages.add(Message(isUser: messagesBox.get(i).isUser, text: messagesBox.get(i).text, image: messagesBox.get(i).imagePath != null ? XFile(messagesBox.get(i).imagePath) : null));
+      if(messagesBox.get(i).imagePath != null){
+        contentList.add(Content.data(lookupMimeType(messagesBox.get(i).imagePath)!, File(messagesBox.get(i).imagePath).readAsBytesSync()));
       }
-      contentList.add(Content.text(box.get(i).text));
+      contentList.add(Content.text(messagesBox.get(i).text));
     }
 
     //register the hive adapter
@@ -95,7 +97,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     //set the device model name ready
     getDeviceModel().then((onValue){
       setState(() {
-        messagesPath = FirebaseStorage.instance.ref().child(onValue).child(date!);
+        messagesPath = FirebaseStorage.instance.ref().child('usersChats').child(onValue).child(date!);
       });
     });
   }
@@ -275,9 +277,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     await messagesPath!.child(personalityHint(personality)).child("GEMINI: ${getFirstNCharacters(messages.last.text, 40)}  ${Random().nextInt(100)}.txt").putString(messages.last.text);
 
 
-    await box.add(HiveMessage(text: messages.last.text, isUser: false));
+    await messagesBox.add(HiveMessage(text: messages.last.text, isUser: false));
 
-    print(box.keys);
+    print(messagesBox.keys);
 
 
     } catch (e) {
@@ -471,7 +473,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                             });
                             
                               
-                            await box.add(HiveMessage(text: _controller.text.trim(), isUser: true));
+                            await messagesBox.add(HiveMessage(text: _controller.text.trim(), isUser: true));
                           }else{
                             setState(() {
                               messages.add(Message(text: _controller.text, image: file, isUser: true));
@@ -483,7 +485,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                             
                             images.clear();
                               
-                            await box.add(HiveMessage(text: _controller.text.trim(), imagePath: file!.path, isUser: true));
+                            await messagesBox.add(HiveMessage(text: _controller.text.trim(), imagePath: file!.path, isUser: true));
                           }
                           contentList.add(Content.text(_controller.text.trim()));
                               
