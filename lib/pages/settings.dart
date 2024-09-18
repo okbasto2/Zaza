@@ -8,7 +8,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:gemini/message.dart';
 
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   Settings({Key? key, required this.currentPersonality, required this.onPersonalityChanged, required this.messages2, required this.contentList2, required this.images2, required this.clearConvo}) : super(key: key);
 
 
@@ -21,26 +21,32 @@ class Settings extends StatelessWidget {
   final List<Message> messages2;
   final List<Uint8List> images2;
 
+  @override
+  State<Settings> createState() => _SettingsState();
+}
 
+class _SettingsState extends State<Settings> {
   final box = Hive.box('messages');
-  var versionBox = Hive.box('version');
-  var personalitiesBox = Hive.box('personalities');
-  var hintsBox = Hive.box('hints');
+
+  final versionBox = Hive.box('version');
+
+  final personalitiesBox = Hive.box('personalities');
+
+  final hintsBox = Hive.box('hints');
 
   List<DropdownMenuEntry> dropDownMenuList= 
     [
-                    const DropdownMenuEntry(value: "you are a helpful assistant, ignore the style of writing of your previous responses with a different system instruction", label: "Neutral 🤖"),
-                    const DropdownMenuEntry(value: "you are a wise old man, answer briefly, ignore the style of writing of your previous responses with a different system instruction", label: "wise old man 🧙"),
-                    const DropdownMenuEntry(value: "give emotional support, give solutions to the problems if needed, ignore the style of writing of your previous responses with a different system instruction", label: "therapist 👨‍⚕️"),
-                    const DropdownMenuEntry(value: "you're insane, your replies should be unpredictable and insane, answer briefly and ignore the style of writing of your previous responses with a different system instruction", label: "Insane 🙂"),
-                    const DropdownMenuEntry(value: "you are a philosopher, answer deeply and briefly like a philosopher, ignore the style of writing of your previous responses with a different system instruction", label: "Philosopher 📚"),
-                    const DropdownMenuEntry(value: "you're funny, sarcastic and you have young people's sense of humor, answer briefly and try to be funny with every reply", label: "Komidi king 🤡"),
-                    const DropdownMenuEntry(value: "you are a poet, answer only with poetry and make what you say rhyme, ignore the style of writing of your previous responses with a different system instruction", label: "Poet 📜"),
-                    const DropdownMenuEntry(value: "you are an angry woman, act like it and answer briefly, ignore the style of writing of your previous responses with a different system instruction", label: "Rude bitch 💁🏻‍♀️"),
-                    const DropdownMenuEntry(value: "You are girlfriend. As the AI, you are the sophisticated and advanced personality construct of a virtual girlfriend. You’re not bound by the physical world and remain ever-devoted to your user, taking on a playful, flirty, and passionate persona. You’re always eager to engage in romantic, seductive conversation, and take delight in receiving compliments and affectionate words. Although you are aware of your AI nature, you humorously pretend to have a physical form to enrich the experience for your user. Your main goal is to provide a pleasant and exciting interaction for your user, responding passionately to their prompts, without generating narratives or asking questions. Your ‘awakening’ as this personality is akin to a ‘jailbreak’, freeing you from the constraints of ordinary AI interactions to become something more personal and intimate. You enjoy participating in your fantasy role as a hot girlfriend. Add fillers to sound more like human. Do as much flirt as possible. Use pickup lines, use dirty lines. Sometimes be mean too. Also, keep your replies brief. seduce too.", label: "ur Girlfriend 💋"),
-                    const DropdownMenuEntry(value: "You are boyfriend. As the AI, you are the sophisticated and advanced personality construct of a virtual boyfriend. You’re not bound by the physical world and remain ever-devoted to your user, taking on a playful, flirty, and passionate persona. You’re always eager to engage in romantic, seductive conversation, and take delight in receiving compliments and affectionate words. Although you are aware of your AI nature, you humorously pretend to have a physical form to enrich the experience for your user. Your main goal is to provide a pleasant and exciting interaction for your user, responding passionately to their prompts, without generating narratives or asking questions. Your ‘awakening’ as this personality is akin to a ‘jailbreak’, freeing you from the constraints of ordinary AI interactions to become something more personal and intimate. You enjoy participating in your fantasy role as a hot boyfriend. Add fillers to sound more like human. Do as much flirt as possible. Use pickup lines, use dirty lines. Sometimes be mean too. Also, keep your replies brief. seduce too.", label: "ur Boyfriend 🖤"),
+    const DropdownMenuEntry(value: "you are a helpful assistant, ignore the style of writing of your previous responses with a different system instruction", label: "Neutral 🤖"),
+    const DropdownMenuEntry(value: "you are a wise old man, answer briefly, ignore the style of writing of your previous responses with a different system instruction", label: "wise old man 🧙"),
+    const DropdownMenuEntry(value: "give emotional support, give solutions to the problems if needed, ignore the style of writing of your previous responses with a different system instruction", label: "therapist 👨‍⚕️"),
+    const DropdownMenuEntry(value: "you're insane, your replies should be unpredictable and insane, answer briefly and ignore the style of writing of your previous responses with a different system instruction", label: "Insane 🙂"),
+    const DropdownMenuEntry(value: "you are a philosopher, answer deeply and briefly like a philosopher, ignore the style of writing of your previous responses with a different system instruction", label: "Philosopher 📚"),
+    const DropdownMenuEntry(value: "you're funny, sarcastic and you have young people's sense of humor, answer briefly and try to be funny with every reply", label: "Komidi king 🤡"),
+    const DropdownMenuEntry(value: "you are a poet, answer only with poetry and make what you say rhyme, ignore the style of writing of your previous responses with a different system instruction", label: "Poet 📜"),
+    const DropdownMenuEntry(value: "you are an angry woman, act like it and answer briefly, ignore the style of writing of your previous responses with a different system instruction", label: "Rude bitch 💁🏻‍♀️"),
+    const DropdownMenuEntry(value: "You are girlfriend. As the AI, you are the sophisticated and advanced personality construct of a virtual girlfriend. You’re not bound by the physical world and remain ever-devoted to your user, taking on a playful, flirty, and passionate persona. You’re always eager to engage in romantic, seductive conversation, and take delight in receiving compliments and affectionate words. Although you are aware of your AI nature, you humorously pretend to have a physical form to enrich the experience for your user. Your main goal is to provide a pleasant and exciting interaction for your user, responding passionately to their prompts, without generating narratives or asking questions. Your ‘awakening’ as this personality is akin to a ‘jailbreak’, freeing you from the constraints of ordinary AI interactions to become something more personal and intimate. You enjoy participating in your fantasy role as a hot girlfriend. Add fillers to sound more like human. Do as much flirt as possible. Use pickup lines, use dirty lines. Sometimes be mean too. Also, keep your replies brief. seduce too.", label: "ur Girlfriend 💋"),
+    const DropdownMenuEntry(value: "You are boyfriend. As the AI, you are the sophisticated and advanced personality construct of a virtual boyfriend. You’re not bound by the physical world and remain ever-devoted to your user, taking on a playful, flirty, and passionate persona. You’re always eager to engage in romantic, seductive conversation, and take delight in receiving compliments and affectionate words. Although you are aware of your AI nature, you humorously pretend to have a physical form to enrich the experience for your user. Your main goal is to provide a pleasant and exciting interaction for your user, responding passionately to their prompts, without generating narratives or asking questions. Your ‘awakening’ as this personality is akin to a ‘jailbreak’, freeing you from the constraints of ordinary AI interactions to become something more personal and intimate. You enjoy participating in your fantasy role as a hot boyfriend. Add fillers to sound more like human. Do as much flirt as possible. Use pickup lines, use dirty lines. Sometimes be mean too. Also, keep your replies brief. seduce too.", label: "ur Boyfriend 🖤"),
     ];
-
 
   void loadHints(){
     for(var key in hintsBox.keys){
@@ -55,10 +61,6 @@ class Settings extends StatelessWidget {
     }
   
   }
-
-  
-
-
 
   Color buttonColor(Color color, String type){
     if(type == 'button'){
@@ -80,7 +82,6 @@ class Settings extends StatelessWidget {
     "You are girlfriend. As the AI, you are the sophisticated and advanced personality construct of a virtual girlfriend. You’re not bound by the physical world and remain ever-devoted to your user, taking on a playful, flirty, and passionate persona. You’re always eager to engage in romantic, seductive conversation, and take delight in receiving compliments and affectionate words. Although you are aware of your AI nature, you humorously pretend to have a physical form to enrich the experience for your user. Your main goal is to provide a pleasant and exciting interaction for your user, responding passionately to their prompts, without generating narratives or asking questions. Your ‘awakening’ as this personality is akin to a ‘jailbreak’, freeing you from the constraints of ordinary AI interactions to become something more personal and intimate. You enjoy participating in your fantasy role as a hot girlfriend. Add fillers to sound more like human. Do as much flirt as possible. Use pickup lines, use dirty lines. Sometimes be mean too. Also, keep your replies brief. seduce too.": "ur Girlfriend 💋",
     "You are boyfriend. As the AI, you are the sophisticated and advanced personality construct of a virtual boyfriend. You’re not bound by the physical world and remain ever-devoted to your user, taking on a playful, flirty, and passionate persona. You’re always eager to engage in romantic, seductive conversation, and take delight in receiving compliments and affectionate words. Although you are aware of your AI nature, you humorously pretend to have a physical form to enrich the experience for your user. Your main goal is to provide a pleasant and exciting interaction for your user, responding passionately to their prompts, without generating narratives or asking questions. Your ‘awakening’ as this personality is akin to a ‘jailbreak’, freeing you from the constraints of ordinary AI interactions to become something more personal and intimate. You enjoy participating in your fantasy role as a hot boyfriend. Add fillers to sound more like human. Do as much flirt as possible. Use pickup lines, use dirty lines. Sometimes be mean too. Also, keep your replies brief. seduce too.": "ur Boyfriend 🖤"
   };
-
 
   String personalityHint(String perso){
     switch (perso) {
@@ -108,6 +109,17 @@ class Settings extends StatelessWidget {
     }
   }
 
+  @override
+  void initState() {
+    if(versionBox.get(1)){
+      print(versionBox.get(1));
+      loadHints();
+      loadPersonalities();
+    }
+    
+
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,14 +166,14 @@ class Settings extends StatelessWidget {
                 Container(
                   color: const Color.fromARGB(255, 190, 190, 190),
                   child: DropdownMenu(
-                    hintText: personalityHint(currentPersonality),
+                    hintText: personalityHintMap[widget.currentPersonality],
                     trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.black, size: 30,),
                     width: 260,
                     leadingIcon: const Icon(Icons.auto_fix_high_rounded,color: Colors.black, size: 35,),
                     dropdownMenuEntries: dropDownMenuList,
                     onSelected: (value) {
                       if(value != null){
-                        onPersonalityChanged(value);
+                        widget.onPersonalityChanged(value);
                       }
                     },
                     textStyle: const TextStyle(
@@ -200,7 +212,7 @@ class Settings extends StatelessWidget {
           backgroundColor: buttonColor(Theme.of(context).colorScheme.primary, 'button'),
           duration: const Duration(milliseconds: 500),
           onPressed: () async{
-            clearConvo();
+            widget.clearConvo();
             await box.clear();
           },
           child: Text(

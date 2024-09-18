@@ -15,7 +15,7 @@ class SplashScreen extends StatefulWidget {
 
 class Splash extends State<SplashScreen> {
 
-  late Map<String, List<String>> json;
+  Map<String, List<String>>? json;
   bool? newUpdate;
   var versionBox = Hive.box('version');
   var personalitiesBox = Hive.box('personalities');
@@ -24,24 +24,36 @@ class Splash extends State<SplashScreen> {
 
   void loadJson() async{
     
-    final json = jsonDecode((utf8.decode((await FirebaseStorage.instance.ref().child('personality.json').getData())!))!) as Map<String, List<String>>;
+    final jsonData = jsonDecode((utf8.decode((await FirebaseStorage.instance.ref().child('personality.json').getData())!))!) as Map<String, dynamic>;
+
+    /* json = jsonData.map((key, value) {
+        if (value is List) {
+          // Ensure all elements are strings
+          return MapEntry(key, List<String>.from(value));
+        } else {
+          // Handle the case where value is not a List<String>
+          throw TypeError();
+        }
+    }); */
+    print(jsonData["hints"][0]);
+    print(jsonData["personalities"][1]);
   }
 
   void installHints(){
-    for(var hint in json['hints']!){
+    for(var hint in json!['hints']!){
       hintsBox.add(hint);
     }
   }
 
   
   void installPersonalities(){
-    for(var personality in json['personalities']!){
+    for(var personality in json!['personalities']!){
       personalitiesBox.add(personality);
     }
   }
 
   Future<int> loadCurrentVersion() async {
-    if (versionBox.keys.isEmpty) {
+    if (versionBox.get(0) == null) {
       return int.parse((await PackageInfo.fromPlatform()).version.split('.').first);
     } else {
       return versionBox.get(0);
@@ -67,8 +79,8 @@ class Splash extends State<SplashScreen> {
       versionBox.put(1, newUpdate);
       if (newUpdate!) {
         loadJson();
-        installHints();
-        installPersonalities();
+        //installHints();
+        //installPersonalities();
         versionBox.put(0, latestVersion);
         // Simulate downloading update (or handle actual download here)
         await Future.delayed(const Duration(seconds: 2)); // Simulate a delay
@@ -81,6 +93,8 @@ class Splash extends State<SplashScreen> {
 
 
     } finally {
+      print(newUpdate);
+      print(versionBox.get(1));
 
       // Navigate to the next screen after checking for updates
       Timer(
