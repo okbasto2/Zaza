@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gemini/pages/MyHomePage.dart';
@@ -13,9 +14,31 @@ class SplashScreen extends StatefulWidget {
 }
 
 class Splash extends State<SplashScreen> {
+
+  late Map<String, List<String>> json;
   bool? newUpdate;
   var versionBox = Hive.box('version');
-  bool isLoading = false; // Track the loading state
+  var personalitiesBox = Hive.box('personalities');
+  var hintsBox = Hive.box('hints');
+
+
+  void loadJson() async{
+    
+    final json = jsonDecode((utf8.decode((await FirebaseStorage.instance.ref().child('personality.json').getData())!))!) as Map<String, List<String>>;
+  }
+
+  void installHints(){
+    for(var hint in json['hints']!){
+      hintsBox.add(hint);
+    }
+  }
+
+  
+  void installPersonalities(){
+    for(var personality in json['personalities']!){
+      personalitiesBox.add(personality);
+    }
+  }
 
   Future<int> loadCurrentVersion() async {
     if (versionBox.keys.isEmpty) {
@@ -41,18 +64,23 @@ class Splash extends State<SplashScreen> {
       int latestVersion = await loadLatestVersion();
       int currentVersion = await loadCurrentVersion();
       newUpdate = (latestVersion > currentVersion);
+      versionBox.put(1, newUpdate);
       if (newUpdate!) {
+        loadJson();
+        installHints();
+        installPersonalities();
         versionBox.put(0, latestVersion);
         // Simulate downloading update (or handle actual download here)
         await Future.delayed(const Duration(seconds: 2)); // Simulate a delay
       }
+
+
     } catch (e) {
       // Handle any errors during version check
       print('Error checking for new update: $e');
+
+
     } finally {
-      setState(() {
-        isLoading = true; // Stop loading once the update check is complete
-      });
 
       // Navigate to the next screen after checking for updates
       Timer(
@@ -78,7 +106,7 @@ class Splash extends State<SplashScreen> {
         child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/splashscreen.png'), // Logo
+                  Image.asset('assets/splashscreen.png'),
                   if (newUpdate != null && (newUpdate!)) ...[
                     const SizedBox(height: 20),
                     const Text(

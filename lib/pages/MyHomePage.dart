@@ -320,7 +320,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 ),
                 const SizedBox(width: 8,),
                 GestureDetector(
-                  child: (currentTheme == ThemeMode.dark) ? const Icon(Icons.settings, color: Colors.white, size: 42,) : const Icon(Icons.menu, color: Colors.black, size: 42,),
+                  child: (currentTheme == ThemeMode.dark) ? const Icon(Icons.settings, color: Colors.white, size: 42,) : const Icon(Icons.settings, color: Colors.black, size: 40,),
                   onTap: () {
                     _focusNode.unfocus();
                     Navigator.push(context, MaterialPageRoute(builder: (context) => Settings(currentPersonality: personality, onPersonalityChanged: updatePersonality, contentList2: contentList, images2: images, messages2: messages, clearConvo: clearConversation)));

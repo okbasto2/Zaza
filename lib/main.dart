@@ -31,6 +31,8 @@ void main() async{
   //open the box
   var messagesBox = await Hive.openBox('messages');
   var versionBox = await Hive.openBox('version');
+  var personalitiesBox = await Hive.openBox('personalities');
+  var hintsBox = await Hive.openBox('hints');
 
   //put the current version in the version box
 
