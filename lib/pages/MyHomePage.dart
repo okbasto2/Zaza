@@ -246,6 +246,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       _controller.clear();
   
     await for (var chunk in model.generateContentStream(contentList)) {
+      print(chunk.text);
       if(messages.last.isUser){
         messages.add(Message(text: "", isUser: false));
       }
@@ -278,8 +279,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
 
     await messagesBox.add(HiveMessage(text: messages.last.text, isUser: false));
-
-    print(messagesBox.keys);
 
 
     } catch (e) {

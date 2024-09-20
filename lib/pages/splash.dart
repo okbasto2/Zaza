@@ -15,27 +15,29 @@ class SplashScreen extends StatefulWidget {
 
 class Splash extends State<SplashScreen> {
 
-  late Map<String, List<String>> json;
+  Map<String, dynamic>? json;
   bool? newUpdate;
   var versionBox = Hive.box('version');
   var personalitiesBox = Hive.box('personalities');
   var hintsBox = Hive.box('hints');
 
 
-  void loadJson() async{
+  Future<void> loadJson() async{
     
-    final json = jsonDecode((utf8.decode((await FirebaseStorage.instance.ref().child('personality.json').getData())!))!) as Map<String, List<String>>;
+    json = jsonDecode(utf8.decode((await FirebaseStorage.instance.ref().child('personality.json').getData())!)) as Map<String, dynamic>;
   }
 
-  void installHints(){
-    for(var hint in json['hints']!){
+  void installHints()async{
+    await hintsBox.clear();
+    for(var hint in json!['hints']!){
       hintsBox.add(hint);
     }
   }
 
   
-  void installPersonalities(){
-    for(var personality in json['personalities']!){
+  void installPersonalities()async{
+    await personalitiesBox.clear();
+    for(var personality in json!['personalities']!){
       personalitiesBox.add(personality);
     }
   }
@@ -63,10 +65,12 @@ class Splash extends State<SplashScreen> {
     try {
       int latestVersion = await loadLatestVersion();
       int currentVersion = await loadCurrentVersion();
-      newUpdate = (latestVersion > currentVersion);
+      setState(() {
+        newUpdate = (latestVersion > currentVersion);
+      });
       versionBox.put(1, newUpdate);
       if (newUpdate!) {
-        loadJson();
+        await loadJson();
         installHints();
         installPersonalities();
         versionBox.put(0, latestVersion);
@@ -108,7 +112,7 @@ class Splash extends State<SplashScreen> {
                 children: [
                   Image.asset('assets/splashscreen.png'),
                   if (newUpdate != null && (newUpdate!)) ...[
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 50),
                     const Text(
                       'New update detected!',
                       style: TextStyle(color: Colors.white, fontSize: 18),
