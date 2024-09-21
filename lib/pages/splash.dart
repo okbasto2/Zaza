@@ -15,7 +15,7 @@ class SplashScreen extends StatefulWidget {
 
 class Splash extends State<SplashScreen> {
 
-  late Map<String, dynamic> json;
+  Map<String, dynamic>? json;
   bool? newUpdate;
   var versionBox = Hive.box('version');
   var personalitiesBox = Hive.box('personalities');
@@ -29,7 +29,7 @@ class Splash extends State<SplashScreen> {
 
   void installHints()async{
     await hintsBox.clear();
-    for(var hint in json['hints']!){
+    for(var hint in json!['hints']!){
       hintsBox.add(hint);
     }
   }
@@ -37,7 +37,7 @@ class Splash extends State<SplashScreen> {
   
   void installPersonalities()async{
     await personalitiesBox.clear();
-    for(var personality in json['personalities']!){
+    for(var personality in json!['personalities']!){
       personalitiesBox.add(personality);
     }
   }
