@@ -15,7 +15,7 @@ class SplashScreen extends StatefulWidget {
 
 class Splash extends State<SplashScreen> {
 
-  Map<String, dynamic>? json;
+  late Map<String, dynamic> json;
   bool? newUpdate;
   var versionBox = Hive.box('version');
   var personalitiesBox = Hive.box('personalities');
@@ -24,12 +24,12 @@ class Splash extends State<SplashScreen> {
 
   Future<void> loadJson() async{
     
-    json = jsonDecode(utf8.decode((await FirebaseStorage.instance.ref().child('personality.json').getData())!)) as Map<String, dynamic>;
+     json = jsonDecode(utf8.decode((await FirebaseStorage.instance.ref().child('personality.json').getData())!)) as Map<String, dynamic>;
   }
 
   void installHints()async{
     await hintsBox.clear();
-    for(var hint in json!['hints']!){
+    for(var hint in json['hints']!){
       hintsBox.add(hint);
     }
   }
@@ -37,13 +37,13 @@ class Splash extends State<SplashScreen> {
   
   void installPersonalities()async{
     await personalitiesBox.clear();
-    for(var personality in json!['personalities']!){
+    for(var personality in json['personalities']!){
       personalitiesBox.add(personality);
     }
   }
 
   Future<int> loadCurrentVersion() async {
-    if (versionBox.keys.isEmpty) {
+    if (versionBox.get(0) == null) {
       return int.parse((await PackageInfo.fromPlatform()).version.split('.').first);
     } else {
       return versionBox.get(0);
